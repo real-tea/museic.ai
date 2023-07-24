@@ -9,6 +9,7 @@ function App() {
   const [isLoading , setIsLoading] = useState(true);
   const [inputText , setInputText] = useState("");
   const [numberOfSongs, setNumberOfSongs] = useState(10);
+  const [songs , setSongs] = useState([]);
 
   const API_KEY = process.env.API_KEY;
   const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
@@ -102,6 +103,83 @@ function App() {
       }
     }
     setIsLoading(false);
+  }
+
+
+  async function searchSongs(songList){
+    setSongs([]);
+    setIsLoading(true);
+
+    const addedSongs = new Set();
+
+
+    for(const song of songList){
+      const [songName , artistName] = getSongAndArtist(song);
+      
+
+      console.log(`Search for ${songName} by ${artistName}`);
+
+      const songResults = await searchTracks(
+        ` ${songName} ${artistName}`,
+          numberOfSongs
+      );
+
+      const matchingTracks = getMatchingTracks(
+        songResults , 
+        songName , 
+        artistName
+      );
+
+      let topTrack = 
+        matchingTracks.length > 0
+        ? getUniqueTopTrack(matchingTracks)
+        : getHighestPopularityTrack(songResults);
+
+      if(topTrack){
+        const trackId = topTrack.id;
+        if(!addedSongs.has(trackId)){
+          addedSongs.add(trackId);
+          setSongs((prevSongs) => [...prevSongs , topTrack]);
+        }else {
+          const nextTrack = songResults.find(
+            (track)=>!addedSongs.has(track.id)
+
+          );
+
+          if(nextTrack){
+            addedSongs.add(nextTrack.id);
+            setSongs((prevSongs)=> [...prevSongs , nextTrack] );
+          }
+
+        }
+        setIsLoading(false);
+      }
+
+      async function searchTracks(query , limit){
+        const { data } = await axios.get("https://api.spotify.com/v1/search" , {
+          headers : {
+            Authorization : `Bearer ${accessToken}`,
+          },
+          params : {
+            q : query , 
+            type : "track",
+            limit : limit.toString();
+          },
+        });
+        return data.track.items;
+      }
+
+      function getMatchingTracks(tracks , songName , artistName){
+        const NormalizedSongName = normalizeString(songName).toLowerCase();
+        const NormalizedArtistName = normalizeString(artistName).toLowerCase();
+
+        return tracks.filter((track)=>{
+          const trackSongName = normalizeString(track.name).toLowerCase();
+          const trackArtists = track.artists.map((artist)=>
+          normalizeString(artist.name).toLowerCase)
+        })
+      }
+    }
   }
 
   return (
