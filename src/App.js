@@ -95,9 +95,9 @@ function App() {
     thPaddingY,
   } = useBreakpointValue(breakpoints);
   const EXAMPLES = [
-    "I'm about to workout and I like kpop",
-    "I've been listening to a lot of beabadoobee lately",
-    "I just got home from work and want to enjoy some chill reading",
+    "I like Kanye West for my gym songs",
+    "I've been feeling like a Shakespearean Villain lately",
+    "Smitten by this lady i met in the metro"
   ];
 
   const handleEnterKey = async (e) => {
