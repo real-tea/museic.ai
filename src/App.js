@@ -68,7 +68,7 @@ const breakpoints = {
     imageBoxSize: "100px",
     isDesktop: true,
     thPaddingX: 2,
-    thPaddingY: 2,
+    thPaddingY: 3,
   },
 };
 
@@ -97,7 +97,7 @@ function App() {
   const EXAMPLES = [
     "I like Kanye West for my gym songs",
     "I've been feeling like a Shakespearean Villain lately",
-    "Smitten by this lady i met in the metro"
+    "Smitten by this lady i met at Froyoland"
   ];
 
   const handleEnterKey = async (e) => {
